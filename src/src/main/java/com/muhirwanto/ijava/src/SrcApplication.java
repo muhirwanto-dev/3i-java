@@ -6,9 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.muhirwanto.ijava.src.Module.ModuleEnum;
+
 @SpringBootApplication
 @RestController
-public class SrcApplication {
+public class SrcApplication
+{
+	private Module module = new Module();
 
 	public static void main(String[] args) 
 	{
@@ -18,6 +22,6 @@ public class SrcApplication {
 	@GetMapping("module")
 	public String OpenModule(@RequestParam(name = "name", defaultValue = "1") int index)
 	{
-		return String.format("Module %d opened!", index);
+		return module.Run(ModuleEnum.values()[index]);
 	}
 }
