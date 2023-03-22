@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.muhirwanto.ijava.src.Model.Department;
 import com.muhirwanto.ijava.src.Model.Employee;
+import com.muhirwanto.ijava.src.Model.Facility;
+import com.muhirwanto.ijava.src.Model.Room;
 
 @Configuration
 public class DatabaseLoader
@@ -35,7 +37,6 @@ public class DatabaseLoader
 
         return args -> log.info("Department repository has been loaded.");
     }
-
     
     @Bean
     CommandLineRunner InitEmployee(EmployeeRepository repository)
@@ -58,5 +59,31 @@ public class DatabaseLoader
         repository.saveAll(Arrays.asList(employees));
 
         return args -> log.info("Department repository has been loaded.");
+    }
+
+    @Bean
+    CommandLineRunner InitHomeStay(FacilityRepository facilityRepository, RoomRepository roomRepository)
+    {
+        Facility[] facilities =
+        {
+            new Facility("Breakfast", 10000),
+            new Facility("Extra bed", 50000),
+            new Facility("Smoking room", 0),
+            new Facility("2nd floor", 0),
+        };
+
+        facilityRepository.saveAll(Arrays.asList(facilities));
+
+        Room[] rooms =
+        {
+            new Room("Single", 119000),
+            new Room("Twin", 119000),
+            new Room("Deluxe", 199000),
+            new Room("Family", 249000),
+        };
+
+        roomRepository.saveAll(Arrays.asList(rooms));
+
+        return args -> log.info("HomeStay facilities & rooms repository has been loaded");
     }
 }
