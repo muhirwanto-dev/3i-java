@@ -66,6 +66,7 @@ public class Module
                 result = RunModule3();
             break;
             case HomeStay:
+                result = RunModule4();
             break;
             case Bonus:
             break;
@@ -165,6 +166,11 @@ public class Module
         int maxTotalHeight = Math.max(CalculateTotalHeightCrossArrays(A, B), CalculateTotalHeightCrossArrays(B, A));
 
         return "The maximum value is " + maxTotalHeight;
+    }
+
+    public String RunModule4()
+    {
+        return "go to: http://localhost:8080/swagger-ui/index.html";
     }
 
     private int CalculateTotalHeightCrossArrays(int[] left, int[] right)

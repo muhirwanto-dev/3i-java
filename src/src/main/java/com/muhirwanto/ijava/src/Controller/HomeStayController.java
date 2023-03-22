@@ -1,18 +1,18 @@
 package com.muhirwanto.ijava.src.Controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.muhirwanto.ijava.src.Model.Facility;
 import com.muhirwanto.ijava.src.Model.ReservationData;
@@ -72,7 +72,7 @@ public class HomeStayController
         var room = roomList.stream().filter(r -> r.Name == roomName).toList();
         if (room.isEmpty())
         {
-            log.warn("{} doesn't exist in the table, use default room");
+            log.warn("{} doesn't exist in the table, use default room", roomName);
         }
         else
         {
@@ -82,5 +82,51 @@ public class HomeStayController
         reservationRepository.save(data);
 
         return data;
+    }
+
+    @GetMapping(path = "/checkin")
+    public @ResponseBody ReservationData CheckIn(@RequestParam String userName)
+    {
+        var userIterable = reservationRepository.findAll();
+        var userList = new ArrayList<ReservationData>();
+
+        userIterable.forEach(userList::add);
+
+        var user = userList.stream().filter(f -> f.UserName == userName).toList();
+        if (user.isEmpty())
+        {
+            log.warn("{} doesn't exist in the table, please register it first", userName);
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found");
+        }
+        else
+        {
+            user.get(0).CheckInDate = new java.sql.Date(new java.util.Date().getTime());
+
+            return user.get(0);
+        }
+    }
+    
+    @GetMapping(path = "/checkout")
+    public @ResponseBody ReservationData CheckOut(@RequestParam String userName)
+    {
+        var userIterable = reservationRepository.findAll();
+        var userList = new ArrayList<ReservationData>();
+
+        userIterable.forEach(userList::add);
+
+        var user = userList.stream().filter(f -> f.UserName == userName).toList();
+        if (user.isEmpty())
+        {
+            log.warn("{} doesn't exist in the table, please register it first", userName);
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found");
+        }
+        else
+        {
+            user.get(0).CheckOutDate = new java.sql.Date(new java.util.Date().getTime());
+
+            return user.get(0);
+        }
     }
 }
