@@ -52,7 +52,7 @@ public class Module
      */
     public String Run(ModuleEnum moduleId)
     {
-        String result = "";
+        String result = "No module found!";
 
         switch (moduleId)
         {
@@ -63,6 +63,7 @@ public class Module
                 result = RunModule2();
             break;
             case MaximumTotalHeight:
+                result = RunModule3();
             break;
             case HomeStay:
             break;
@@ -76,6 +77,8 @@ public class Module
 
     public String RunModule1()
     {
+        // The data is prepared via Dependency Injection (@Bean) at DatabaseLoader
+
         String[] departmentIds = departmentRepository.GetAllDepartmentId();
         String[] departmentNames = departmentRepository.GetAllDepartmentName();
         Map<String, Integer> departmentCounterHash = new Hashtable<String, Integer>();
@@ -115,8 +118,14 @@ public class Module
 
     public String RunModule2()
     {
+        // Input condition
         final int minBuyCount = 4;
         Integer[] input = {3, 6, 2, 5, 1};
+
+        if (input.length < minBuyCount)
+        {
+            throw new IllegalArgumentException("Array length should greater or equal to " + minBuyCount);
+        }
 
         // a) Sort in reverse order to get maximum discount at 'minBuyCount'-th item
         Arrays.sort(input, Collections.reverseOrder());
@@ -131,7 +140,7 @@ public class Module
                 continue;
             }
 
-            // Sum sortened list except free item
+            // b) Sum sortened list except free item
             sum += value;
             result += value;
 
@@ -142,6 +151,42 @@ public class Module
         }
 
         result += "] - index of " + minBuyCount + " = " + sum;
+
+        return result;
+    }
+
+    public String RunModule3()
+    {
+        // Input condition
+        int[] A = {1, 4, 5};
+        int[] B = {3, 4, 9};
+
+        // a) Calculate the total height cross arrays
+        int maxTotalHeight = Math.max(CalculateTotalHeightCrossArrays(A, B), CalculateTotalHeightCrossArrays(B, A));
+
+        return "The maximum value is " + maxTotalHeight;
+    }
+
+    private int CalculateTotalHeightCrossArrays(int[] left, int[] right)
+    {
+        if (left.length != right.length)
+        {
+            throw new IllegalArgumentException("Array length are different!");
+        }
+
+        int result = 0;
+
+        for (int idx = 0; idx < left.length; idx++)
+        {
+            if (idx % 2 == 0)
+            {
+                result += left[idx];
+            }
+            else
+            {
+                result += right[idx];
+            }
+        }
 
         return result;
     }
