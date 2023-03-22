@@ -15,6 +15,10 @@ public class Facility
     public String Name;
     public float Price;
 
+    public Facility()
+    {        
+    }
+
     public Facility(String Name, float price)
     {
         this.Name = Name;

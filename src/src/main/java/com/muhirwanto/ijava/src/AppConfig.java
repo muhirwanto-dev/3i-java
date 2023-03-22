@@ -20,5 +20,5 @@ public class AppConfig
     public Module Module()
     {
         return new Module(this.departmentRepository, this.employeeRepository);
-    }   
+    }
 }
