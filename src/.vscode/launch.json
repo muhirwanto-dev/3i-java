@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SrcApplication<src>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.muhirwanto.ijava.src.SrcApplication",
+            "projectName": "src",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 package com.muhirwanto.ijava.src;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -45,45 +46,21 @@ public class Module
         this.employeeRepository = employeeRepository;
     }
 
-    public static void RunModule1(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository)
-    {
-        String[] departmentIds = departmentRepository.GetAllDepartmentId();
-        String[] departmentNames = departmentRepository.GetAllDepartmentName();
-        Map<String, Integer> departmentCounterHash = new Hashtable<String, Integer>();
-
-        log.info("Raw entries");
-        for (int idx = 0; idx < departmentIds.length; idx++)
-        {
-            int count = employeeRepository.GetEmployeeCount(departmentIds[idx]);
-            departmentCounterHash.put(departmentNames[idx], count);
-
-            log.info("Name: " + departmentNames[idx] + " | Count: " + Integer.toString(count));
-        }
-
-        List<Entry<String, Integer>> entryList = new ArrayList<Entry<String, Integer>>(departmentCounterHash.entrySet());
-        // Using % 2 != 0 make it reversed, IDK why.
-        Collections.sort(entryList, Comparator.comparing(hash -> hash.getValue() % 2 == 0));
-
-        log.info("\n");
-        log.info("Sorted entries");
-        for (Entry<String,Integer> entry : entryList)
-        {
-            log.info("Name: " + entry.getKey() + " | Count: " + Integer.toString(entry.getValue()));
-        }
-    }
-
     /**
-     * @param moduleId
-     * @return
+     * @param moduleId index of module, start with 0
+     * @return string value to be written in web page
      */
     public String Run(ModuleEnum moduleId)
     {
+        String result = "";
+
         switch (moduleId)
         {
             case OddAndEven:
-                RunModule1(departmentRepository, employeeRepository);
+                result = RunModule1();
             break;
             case MinimumPayment:
+                result = RunModule2();
             break;
             case MaximumTotalHeight:
             break;
@@ -94,6 +71,78 @@ public class Module
         }
 
         var id = moduleId.ordinal();
-        return String.format("Module %d (%s) opened!", id, moduleNames[id]);
+        return String.format("Module %d (%s) opened! Result: %s", id, moduleNames[id], result);
+    }    
+
+    public String RunModule1()
+    {
+        String[] departmentIds = departmentRepository.GetAllDepartmentId();
+        String[] departmentNames = departmentRepository.GetAllDepartmentName();
+        Map<String, Integer> departmentCounterHash = new Hashtable<String, Integer>();
+
+        log.info("Raw entries");
+        for (int idx = 0; idx < departmentIds.length; idx++)
+        {
+            // a) Get employee count from SQL table based on department id
+            int count = employeeRepository.GetEmployeeCount(departmentIds[idx]);
+
+            departmentCounterHash.put(departmentNames[idx], count);
+
+            log.info("Name: " + departmentNames[idx] + " | Count: " + count);
+        }
+
+        List<Entry<String, Integer>> entryList = new ArrayList<Entry<String, Integer>>(departmentCounterHash.entrySet());
+
+        // b) Sort existing list based on employee count, odd number then even number
+        // Using % 2 != 0 make it reversed, IDK why.
+        Collections.sort(entryList, Comparator.comparing(hash -> hash.getValue() % 2 == 0));
+
+        String result = "";
+
+        log.info("\n");
+        log.info("Sorted entries");
+        for (Entry<String,Integer> entry : entryList)
+        {
+            var logStr = "Name: " + entry.getKey() + " | Count: " + entry.getValue();
+
+            result += logStr + ";";
+
+            log.info(logStr);
+        }
+
+        return result;
+    }
+
+    public String RunModule2()
+    {
+        final int minBuyCount = 4;
+        Integer[] input = {3, 6, 2, 5, 1};
+
+        // a) Sort in reverse order to get maximum discount at 'minBuyCount'-th item
+        Arrays.sort(input, Collections.reverseOrder());
+
+        String result = "Sum of [";
+        int sum = 0;
+
+        for (Integer value : input)
+        {
+            if (value == input[minBuyCount - 1])
+            {
+                continue;
+            }
+
+            // Sum sortened list except free item
+            sum += value;
+            result += value;
+
+            if (value != input[input.length - 1])
+            {
+                result += ",";
+            }
+        }
+
+        result += "] - index of " + minBuyCount + " = " + sum;
+
+        return result;
     }
 }
